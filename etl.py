@@ -44,7 +44,7 @@ connection = engine.connect()
 transaction = connection.begin()
 
 try:
-    # ================== Populate dim_customer ==================
+    # Populate dim_customer
     customers = df_cleaned[['CustomerID', 'Country']].drop_duplicates()
     customers.columns = ['customer_id', 'country']
 
@@ -66,7 +66,7 @@ try:
         
         connection.execute(text(sql_query))
 
-    # ================== Populate dim_product ==================
+    # Populate dim_product
     products = df_cleaned[['StockCode', 'Description', 'UnitPrice']].drop_duplicates()
     products.columns = ['product_id', 'description', 'unit_price']
 
@@ -88,7 +88,7 @@ try:
         
         connection.execute(text(sql_query))
 
-    # ================== Populate dim_time ==================
+    # Populate dim_time 
     df_cleaned['InvoiceYear'] = df_cleaned['InvoiceDate'].dt.year
     df_cleaned['InvoiceMonth'] = df_cleaned['InvoiceDate'].dt.month
     time_dim = df_cleaned[['InvoiceDate', 'InvoiceMonth', 'InvoiceYear']].drop_duplicates()
@@ -112,7 +112,7 @@ try:
         
         connection.execute(text(sql_query))
 
-    # ================== Populate fact_sales ==================
+    #  Populate fact_sales
     fact_sales_rows = []
 
     for index, row in df_cleaned.iterrows():

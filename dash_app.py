@@ -16,7 +16,7 @@ PORT = '5432'
 
 engine = create_engine(f'{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}')
 
-# Create Dash app with Bootstrap styling
+# Create Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 # Function to load data from PostgreSQL
@@ -27,11 +27,28 @@ def load_data(query):
         print(f"Error loading data: {e}")
         return pd.DataFrame()  # Return an empty DataFrame in case of an error
 
-# Layout of the dashboard
+# Dashboard layout
 app.layout = dbc.Container([
-    dbc.Row([ 
-        dbc.Col(html.H1("Retail Sales Dashboard", className="text-center text-primary mb-4"), width=12)
+    dbc.Row([
+        dbc.Col(html.H1("Retail Sales Dashboard", className="text-center text-primary mb-2"), width=12)
     ]),
+    dbc.Row([
+        dbc.Col(html.P("Explore sales trends, top-performing products, and geographical sales distribution.", 
+                      className="text-center text-muted mb-4"), width=12)
+    ]),
+    dbc.Row([
+        dbc.Col(html.H4("Date Range Picker", className="text-center text-secondary mb-2"), width=12),
+        dbc.Col(
+            dcc.DatePickerRange(
+                id='date-picker',
+                start_date='2010-12-01',
+                end_date='2011-12-09',
+                display_format='YYYY-MM-DD',
+                className='mb-4 d-flex justify-content-center',
+                style={'padding': '10px', 'textAlign': 'center'}
+            ), width=6, className="mx-auto"
+        )
+    ], className="mb-4"),
     dbc.Row([
         dbc.Col(dcc.Dropdown(id='product-dropdown', multi=True, placeholder="Select Products"), width=6),
         dbc.Col(dcc.Dropdown(id='country-dropdown', multi=True, placeholder="Select Countries"), width=6)
@@ -39,49 +56,55 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Total Sales", style={'backgroundColor': '#f8f9fa'}),
-                dbc.CardBody(dcc.Graph(id='total-sales-chart'))
-            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px'}), width=6),
+                dbc.CardHeader("Total Sales", className="text-center text-dark"),
+                html.P("This graph shows the total sales across the selected date range.", className="text-muted text-center mb-2"),
+                dbc.CardBody([
+                    dcc.Graph(id='total-sales-chart')
+                ])
+            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}), width=6),
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Top-Selling Products", style={'backgroundColor': '#f8f9fa'}),
-                dbc.CardBody(dcc.Graph(id='top-products-chart'))
-            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px'}), width=6),
+                dbc.CardHeader("Top-Selling Products", className="text-center text-dark"),
+                html.P("This bar chart highlights the top 10 products based on quantity sold.", className="text-muted text-center mb-2"),
+                dbc.CardBody([
+                    dcc.Graph(id='top-products-chart')
+                ])
+            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}), width=6),
     ]),
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Sales by Country", style={'backgroundColor': '#f8f9fa'}),
-                dbc.CardBody(dcc.Graph(id='sales-by-country-chart'))
-            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px'}), width=12)
-    ]),
-    dbc.Row([
-        dbc.Col(html.Div("Select a Date Range"), className="text-center"),
-        dbc.Col(dcc.DatePickerRange(
-            id='date-picker',
-            start_date='2010-12-01',
-            end_date='2011-12-09',
-            display_format='YYYY-MM-DD',
-            style={'width': '100%', 'padding': '10px'}
-        ), width=6),
+                dbc.CardHeader("Sales by Country", className="text-center text-dark"),
+                html.P("This chart provides a breakdown of total sales by country.", className="text-muted text-center mb-2"),
+                dbc.CardBody([
+                    dcc.Graph(id='sales-by-country-chart')
+                ])
+            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}), width=12)
     ]),
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Sales Trend Over Time", style={'backgroundColor': '#f8f9fa'}),
-                dbc.CardBody(dcc.Graph(id='sales-trend-chart'))
-            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px'}), width=12)
+                dbc.CardHeader("Sales Trend Over Time", className="text-center text-dark"),
+                html.P("This line chart shows how sales have varied over time within the selected range.", className="text-muted text-center mb-2"),
+                dbc.CardBody([
+                    dcc.Graph(id='sales-trend-chart')
+                ])
+            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}), width=12)
     ]),
     dbc.Row([
         dbc.Col(
             dbc.Card([
-                dbc.CardHeader("Product Sales Distribution", style={'backgroundColor': '#f8f9fa'}),
-                dbc.CardBody(dcc.Graph(id='product-sales-pie-chart'))
-            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px'}), width=12)
+                dbc.CardHeader("Product Sales Distribution", className="text-center text-dark"),
+                html.P("This pie chart displays the distribution of sales among the top 10 products.", className="text-muted text-center mb-2"),
+                dbc.CardBody([
+                    dcc.Graph(id='product-sales-pie-chart')
+                ])
+            ], style={'boxShadow': '0 4px 8px rgba(0,0,0,0.2)', 'borderRadius': '10px', 'backgroundColor': '#f9f9f9'}), width=12)
     ])
 ], fluid=True)
 
-# Callback for updating dropdown filters
+
+# Callback for dropdown filters
 @app.callback(
     [Output('product-dropdown', 'options'),
      Output('country-dropdown', 'options')],
@@ -157,7 +180,7 @@ def update_charts(start_date, end_date, selected_products, selected_countries):
     {product_filter}
     GROUP BY p.description
     ORDER BY total_quantity DESC
-    LIMIT 10  -- Expanded to top 10
+    LIMIT 10
     """
     top_products = load_data(top_products_query)
 
@@ -207,7 +230,14 @@ def update_charts(start_date, end_date, selected_products, selected_countries):
 
     # Total Sales Figure
     total_sales_figure = {
-        'data': [{'x': ['Total Sales'], 'y': [total_sales['total_sales'][0]], 'type': 'bar', 'marker': {'color': '#007bff'}}],
+        'data': [{
+            'x': ['Total Sales'],
+            'y': [total_sales['total_sales'][0]],
+            'type': 'bar',
+            'marker': {
+                'color': 'rgba(0,123,255,0.8)'
+            }
+        }],
         'layout': {
             'title': 'Total Sales',
             'titlefont': {'size': 24},
@@ -218,45 +248,86 @@ def update_charts(start_date, end_date, selected_products, selected_countries):
 
     # Top Products Figure
     top_products_figure = {
-        'data': [{'x': top_products['description'], 'y': top_products['total_quantity'], 'type': 'bar', 'marker': {'color': '#28a745'}}],
+        'data': [{
+            'x': top_products['description'],
+            'y': top_products['total_quantity'],
+            'type': 'bar',
+            'marker': {
+                'color': [
+                    'rgba(85,170,85,1)', 'rgba(76,153,76,1)', 'rgba(68,136,68,1)',
+                    'rgba(59,119,59,1)', 'rgba(51,102,51,1)', 'rgba(42,85,42,1)',
+                    'rgba(34,68,34,1)', 'rgba(25,51,25,1)', 'rgba(17,34,17,1)', 'rgba(8,17,8,1)'
+                ]
+            }
+        }],
         'layout': {
-            'title': 'Top 10 Selling Products',
+            'title': 'Top Selling Products',
             'titlefont': {'size': 24},
             'height': 400,
             'margin': {'l': 40, 'r': 40, 't': 40, 'b': 40},
-            'hovermode': 'closest'  # Adding hover effects
+            'hovermode': 'closest'
         }
     }
 
     # Sales by Country Figure
     sales_by_country_figure = {
-        'data': [{'x': sales_by_country['country'], 'y': sales_by_country['total_sales'], 'type': 'bar', 'marker': {'color': '#17a2b8'}}],
+        'data': [{
+            'x': sales_by_country['country'],
+            'y': sales_by_country['total_sales'],
+            'type': 'bar',
+            'marker': {
+                'color': [
+                    'rgba(255,102,102,1)', 'rgba(255,77,77,1)', 'rgba(255,51,51,1)',
+                    'rgba(255,26,26,1)', 'rgba(255,0,0,1)', 'rgba(230,0,0,1)',
+                    'rgba(204,0,0,1)', 'rgba(179,0,0,1)', 'rgba(153,0,0,1)', 'rgba(128,0,0,1)'
+                ]
+            }
+        }],
         'layout': {
             'title': 'Sales by Country',
             'titlefont': {'size': 24},
             'height': 400,
             'margin': {'l': 40, 'r': 40, 't': 40, 'b': 40},
-            'hovermode': 'closest'  # Adding hover effects
+            'hovermode': 'closest'
         }
     }
 
     # Sales Trend Figure
     sales_trend_figure = {
-        'data': [{'x': sales_trend['invoice_date'], 'y': sales_trend['total_sales'], 'type': 'line', 'marker': {'color': '#dc3545'}}],
+        'data': [{
+            'x': sales_trend['invoice_date'],
+            'y': sales_trend['total_sales'],
+            'type': 'scatter',
+            'mode': 'lines',
+            'line': {
+                'color': 'rgba(255,165,0,1)',
+                'width': 2
+            }
+        }],
         'layout': {
             'title': 'Sales Trend Over Time',
             'titlefont': {'size': 24},
             'height': 400,
             'margin': {'l': 40, 'r': 40, 't': 40, 'b': 40},
-            'hovermode': 'closest'  # Adding hover effects
+            'hovermode': 'closest'
         }
     }
 
     # Pie Chart Figure
     pie_figure = {
-        'data': [{'labels': pie_data['description'], 'values': pie_data['total_sales'], 'type': 'pie', 'hole': 0.4, 'marker': {
-            'colors': ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6B6B', '#4BFF7B', '#FF77FF', '#FFF700']
-        }}],  # Donut style with custom colors
+        'data': [{
+            'labels': pie_data['description'],
+            'values': pie_data['total_sales'],
+            'type': 'pie',
+            'hole': 0.4,
+            'marker': {
+                'colors': [
+                    'rgba(255,99,132,1)', 'rgba(54,162,235,1)', 'rgba(255,206,86,1)',
+                    'rgba(75,192,192,1)', 'rgba(153,102,255,1)', 'rgba(255,159,64,1)',
+                    'rgba(255,107,107,1)', 'rgba(75,255,123,1)', 'rgba(255,119,255,1)', 'rgba(255,247,0,1)'
+                ]
+            }
+        }],
         'layout': {
             'title': 'Top Product Sales Distribution',
             'titlefont': {'size': 24},
@@ -268,7 +339,8 @@ def update_charts(start_date, end_date, selected_products, selected_countries):
 
     return total_sales_figure, top_products_figure, sales_by_country_figure, sales_trend_figure, pie_figure
 
+
+
 # Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
-
